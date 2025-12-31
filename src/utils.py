@@ -14,7 +14,7 @@ import numpy as np
 from PIL import Image
 
 
-def decode_img(b64_arr: str) -> dict:
+def decode_img(b64_arr: str, expected_size: int=3145728) -> dict:
     """ Decode a base64 encoded PNG array """
 
     try:
@@ -22,7 +22,7 @@ def decode_img(b64_arr: str) -> dict:
         png_encoded = np.frombuffer(arr_bytes, dtype=np.uint8)  # Load bytes into PNG array
         img = cv2.imdecode(png_encoded, cv2.IMREAD_COLOR)       # Decode PNG into numpy array
 
-        if img.size > 3145728: # Check if image size is more than (1024x1024x3)
+        if img.size > expected_size or img.size < expected_size: # Check if image size is more than (1024x1024x3)
             img = cv2.resize(img, (1024, 1024))
             
         # Return img_dict
@@ -38,7 +38,7 @@ def decode_img(b64_arr: str) -> dict:
             'errors': error_msg
         }
 
-def encode_out_map(out_map: numpy.ndarray) -> str:
+def encode_out_map(out_map: numpy.ndarray) -> dict:
     """ Encode an np.uint8 output map in Base64 """
 
     try:
@@ -56,7 +56,7 @@ def encode_out_map(out_map: numpy.ndarray) -> str:
             'errors': error_msg
         }
 
-def encode_bbox_arr(bbox_arr: numpy.ndarray):
+def encode_bbox_arr(bbox_arr: numpy.ndarray) -> dict:
     """ Encode the bounding box array as base64 """
     try:
         bbox_arr = bbox_arr.astype(np.float32)  # Cast to float32
